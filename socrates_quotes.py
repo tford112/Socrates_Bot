@@ -1,10 +1,11 @@
 import requests
 from bs4 import BeautifulSoup
-import sys
-import io
-import re
+import sys, os, io, re
 from time import sleep
 from csv import writer, reader
+
+path = "/Users/tomtom/Documents/socrates_bot"
+os.chdir(path)
 
 soc_quotes = []
 soc_bio = []
@@ -13,7 +14,7 @@ base_url = "https://www.keepinspiring.me/socrates-quotes/"
 sys.stdout = io.TextIOWrapper(sys.stdout.detach(), encoding = 'utf-8')
 sys.stderr = io.TextIOWrapper(sys.stderr.detach(), encoding = 'utf-8')
 
-def scrape(quotes, bio):
+def scrape():
     res = requests.get(f"{base_url}")
     print(f"Now Scraping {base_url}")
     soup = BeautifulSoup(res.text, "html.parser")
@@ -34,7 +35,7 @@ def scrape(quotes, bio):
         bio_counter += 1
         if bio_counter == 5:
             break
-    return quotes, bio
+    return soc_quotes, soc_bio
 
 def write_bio(bio):
     with open("soc_bio.csv", "wb") as file:
@@ -46,6 +47,7 @@ def write_quote(quotes):
     with open("soc_q.csv", "wb") as file:  ###  WHEN ENCODING IN UTF-8 NEED TO HAVE "WB" WRITE BYTES
         for q in quotes:
             file.write(q.encode("utf-8"))
+            # file.write("\n".encode("utf-8"))
 
 def read(filename):
     soc = []
@@ -55,12 +57,12 @@ def read(filename):
             soc.append(line)
     return soc
 
-quotes, bio = scrape(soc_quotes, soc_bio)
-write_quote(quotes)
-write_bio(bio)
-soc = read("soc_q.csv")
-b = read("soc_bio.csv")
-print(b)
-print(soc)
-# print(read_quote(quotes))
-# print(read_bio(bio))
+
+if __name__  == "__main__":
+    quotes, bio = scrape()
+    write_quote(quotes)
+    write_bio(bio)
+    soc = read("soc_q.csv")
+    b = read("soc_bio.csv")
+    print(b)
+    print(soc)
